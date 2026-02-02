@@ -484,7 +484,7 @@ $fast_order = $_GET['fast_order'] ?? 0; // Флаг быстрого заказ�
 
 // Получаем данные заказа
 try {
-    $stmt = $pdo->prepare("SELECT * FROM orders WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT o.*, sp.description as product_description FROM orders o LEFT JOIN supplier_products sp ON o.product_id = sp.id WHERE o.id = ?");
     $stmt->execute([$order_id]);
     $order = $stmt->fetch();
     
@@ -786,6 +786,9 @@ if (d.head) d.head.appendChild(s);
                         <h5>Детали заказа:</h5>
                         <p><strong>Номер заказа:</strong> <?= htmlspecialchars($order['order_number']) ?></p>
                         <p><strong>Товар:</strong> <?= htmlspecialchars($order['product_name']) ?></p>
+                        <?php if (!empty($order['product_description'])): ?>
+                        <p><strong>Описание:</strong> <small><?= htmlspecialchars(mb_substr($order['product_description'], 0, 200, 'UTF-8')) ?><?= mb_strlen($order['product_description'] ?? '', 'UTF-8') > 200 ? '...' : '' ?></small></p>
+                        <?php endif; ?>
                         <p><strong>Сумма к оплате:</strong> 
                            <span class="text-success fw-bold"><?= number_format($amount, 2) ?> ₽</span>
                         </p>

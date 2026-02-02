@@ -116,11 +116,13 @@ header('Location: /cabinet/');
 exit();
 }
 
-// Получаем заказы
+// Получаем заказы с описанием товара
 $orders_stmt = $pdo->prepare("
-SELECT * FROM orders
-WHERE user_id = ?
-ORDER BY created_at DESC
+SELECT o.*, sp.description as product_description
+FROM orders o
+LEFT JOIN supplier_products sp ON o.product_id = sp.id
+WHERE o.user_id = ?
+ORDER BY o.created_at DESC
 LIMIT 10
 ");
 $orders_stmt->execute([$_SESSION['user_id']]);
@@ -449,7 +451,12 @@ ID: #<?= $user['id'] ?> |
 <?php foreach ($orders as $order): ?>
 <tr>
 <td><?= $order['order_number'] ?></td>
-<td><?= htmlspecialchars(substr($order['product_name'] ?? 'Без названия', 0, 30)) ?></td>
+<td>
+<?= htmlspecialchars(substr($order['product_name'] ?? 'Без названия', 0, 30)) ?>
+<?php if (!empty($order['product_description'])): ?>
+<br><small class="text-muted"><?= htmlspecialchars(mb_substr($order['product_description'], 0, 80, 'UTF-8')) ?><?= mb_strlen($order['product_description'] ?? '', 'UTF-8') > 80 ? '...' : '' ?></small>
+<?php endif; ?>
+</td>
 <td><?= date('d.m.Y H:i', strtotime($order['created_at'])) ?></td>
 <td><?= number_format($order['total_amount'], 2) ?> ₽</td>
 <td>

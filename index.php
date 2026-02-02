@@ -232,13 +232,13 @@ $all_products = [];
 $category_products = [];
 try {
     $stmt = $pdo->query("
-        SELECT id, name, our_price, stock, category
-        FROM supplier_products 
-        WHERE stock > 0 
+        SELECT id, name, description, our_price, stock, category
+        FROM supplier_products
+        WHERE stock > 0
         ORDER BY category, name
     ");
     $all_products = $stmt->fetchAll();
-    
+
     // Группируем по категориям для JavaScript
     foreach ($all_products as $product) {
         $category = $product['category'];
@@ -248,6 +248,7 @@ try {
         $category_products[$category][] = [
             'id' => $product['id'],
             'name' => $product['name'],
+            'description' => mb_substr($product['description'] ?? '', 0, 200, 'UTF-8'),
             'price' => $product['our_price'],
             'stock' => $product['stock']
         ];
@@ -291,6 +292,7 @@ class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none f
 <option value="">-- Сначала выберите категорию --</option>
 </select>
 <p class="text-sm text-gray-500 mt-1" id="productsInfo">Товары появятся после выбора категории</p>
+<div id="productDescription" class="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200 text-sm text-gray-700" style="display:none;"></div>
 </div>
 <div class="mb-6">
 <label for="email" class="block text-gray-700 text-lg font-bold mb-2">3) Ваш email (Необязательно)</label>
@@ -356,6 +358,7 @@ document.getElementById('categorySelect').addEventListener('change', function() 
             option.value = product.id;
             option.textContent = `${product.name} - ${product.price} ₽ (${product.stock} шт.)`;
             option.dataset.price = product.price;
+            option.dataset.description = product.description || '';
             productSelect.appendChild(option);
         });
         productSelect.disabled = false;
@@ -370,19 +373,29 @@ document.getElementById('categorySelect').addEventListener('change', function() 
     }
 });
 
-// Обновляем итоговую сумму при выборе товара
+// Обновляем итоговую сумму и описание при выборе товара
 document.getElementById('productSelect').addEventListener('change', function() {
     const selectedOption = this.options[this.selectedIndex];
     const totalAmount = document.getElementById('totalAmount');
     const payButton = document.getElementById('payButton');
-    
+    const descBlock = document.getElementById('productDescription');
+
     if (this.value && selectedOption.dataset.price) {
         const price = parseFloat(selectedOption.dataset.price);
         totalAmount.textContent = price.toFixed(2) + ' ₽';
         payButton.disabled = false;
+        // Show product description
+        const desc = selectedOption.dataset.description || '';
+        if (desc) {
+            descBlock.textContent = desc;
+            descBlock.style.display = 'block';
+        } else {
+            descBlock.style.display = 'none';
+        }
     } else {
         totalAmount.textContent = '0.00 ₽';
         payButton.disabled = true;
+        descBlock.style.display = 'none';
     }
 });
 
