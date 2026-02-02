@@ -109,6 +109,11 @@ if (!isset($page_title)) $page_title = SITE_NAME;
                             Личный кабинет
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cabinet/reg/">
+                            Регистрация
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
