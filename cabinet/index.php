@@ -1,7 +1,7 @@
 <?php
 // cabinet/index.php - Личный кабинет с регистрацией и входом
 session_start();
-require_once '../includes/config.php';
+require_once __DIR__ . '/../includes/config.php';
 
 // Обработка выхода
 if (isset($_GET['logout'])) {
@@ -172,7 +172,7 @@ if (strpos($_SERVER['REQUEST_URI'], '/cabinet/reg') !== false) {
 
 $page_title = isset($_SESSION['user_id']) ? 'Личный кабинет' : 'Вход и регистрация';
 $page_title .= ' - ' . SITE_NAME;
-require_once '../templates/header.php';
+require_once __DIR__ . '/../templates/header.php';
 ?>
 <style>
 .auth-container {
@@ -577,11 +577,9 @@ echo $type_names[$trans['type']] ?? '<span class="badge bg-secondary">' . $trans
 </ul>
 </div>
 </div>
-<!-- Футер -->
-<div class="text-center p-3 border-top">
-<p class="mb-0">© <?= date('Y') ?> <?= SITE_NAME ?>. Личный кабинет v1.0</p>
-</div>
-</div>
+</div><!-- /.row -->
+</div><!-- /.container mt-4 -->
+</div><!-- /.cabinet-container -->
 <?php endif; ?>
 <script>
 // Глобальная функция для переключения вкладок
@@ -709,4 +707,4 @@ confirm.focus();
 });
 </script>
 
-<?php require_once '../templates/footer.php'; ?>
+<?php require_once __DIR__ . '/../templates/footer.php'; ?>
