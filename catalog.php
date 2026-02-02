@@ -490,34 +490,9 @@ class="btn btn-primary btn-lg">
 </nav>
 <?php endif; ?>
 <?php endif; ?>
-</div></div></div>
-<!-- Chatra {literal} -->
-<script>
-(function(d, w, c) {
-w.ChatraID = 'GXdF3eAtsspXao2vf';
-var s = d.createElement('script');
-w[c] = w[c] || function() {
-(w[c].q = w[c].q || []).push(arguments);
-};
-s.async = true;
-s.src = 'https://call.chatra.io/chatra.js';
-if (d.head) d.head.appendChild(s);
-})(document, window, 'Chatra');
-</script>
-<!-- /Chatra {/literal} -->
+</div><!-- /.container (catalog content) -->
+
 <style>
-.copyright {
-padding-top: 1.5rem;
-background-color: dodgerblue;
-text-align: center;
-}
-.copyright .list-unstyled li {
-display: inline-block;
-margin-right: 1rem;
-}
-.copyright .statement {
-text-align: right;
-}
 .product-card {
 transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 border: 1px solid #e9ecef;
@@ -648,3 +623,5 @@ updateTotalPrice(productSelect);
 }
 });
 </script>
+
+<?php require_once 'templates/footer.php'; ?>

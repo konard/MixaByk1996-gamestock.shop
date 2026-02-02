@@ -160,41 +160,24 @@ $balance = 0;
 $last_paid_with_account = null;
 }
 }
-?>
-<!DOCTYPE html>
-<!-- Favicon  -->
-<link rel="icon" href="https://gamestock.shop/images/favicon.ico" />
-<html lang="ru">
-<!-- Chatra {literal} -->
-<script>
-(function(d, w, c) {
-w.ChatraID = 'GXdF3eAtsspXao2vf';
-var s = d.createElement('script');
-w[c] = w[c] || function() {
-(w[c].q = w[c].q || []).push(arguments);
-};
-s.async = true;
-s.src = 'https://call.chatra.io/chatra.js';
-if (d.head) d.head.appendChild(s);
-})(document, window, 'Chatra');
-</script>
-<!-- /Chatra {/literal} -->
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= isset($_SESSION['user_id']) ? 'Личный кабинет' : 'Вход и регистрация' ?> - <?= SITE_NAME ?></title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-<style>
-body {
-background: lightskyblue;
-background: url(https://gamestock.shop/images/background.png), linear-gradient(140deg, royalblue 0%, cornflowerblue 33%, dodgerblue 67%, lightskyblue 100%);
-min-height: 100vh;
-padding: 20px;
+
+// Detect if registration tab should be active (from /cabinet/reg/ URL)
+$show_register_tab = false;
+if (isset($_GET['tab']) && $_GET['tab'] === 'register') {
+    $show_register_tab = true;
 }
+if (strpos($_SERVER['REQUEST_URI'], '/cabinet/reg') !== false) {
+    $show_register_tab = true;
+}
+
+$page_title = isset($_SESSION['user_id']) ? 'Личный кабинет' : 'Вход и регистрация';
+$page_title .= ' - ' . SITE_NAME;
+require_once '../templates/header.php';
+?>
+<style>
 .auth-container {
 max-width: 500px;
-margin: 50px auto;
+margin: 30px auto;
 background: white;
 border-radius: 20px;
 overflow: hidden;
@@ -228,13 +211,6 @@ display: none;
 .auth-form.active {
 display: block;
 }
-.test-accounts {
-background: #f8f9fa;
-border-radius: 10px;
-padding: 15px;
-margin-top: 20px;
-font-size: 0.9rem;
-}
 .cabinet-container {
 max-width: 1200px;
 margin: 0 auto;
@@ -267,25 +243,7 @@ transform: translateY(-50%);
 cursor: pointer;
 color: #6c757d;
 }
-
-.copyright {
-padding-top: 1.5rem;
-background-color: rgb(2, 55, 241);
-text-align: center;
-}
-.copyright {
-text-align: left;
-}
-.copyright .list-unstyled li {
-display: inline-block;
-margin-right: 1rem;
-}
-.copyright .statement {
-text-align: right;
-}
 </style>
-</head>
-<body>
 <?php if (!isset($_SESSION['user_id'])): ?>
 <!-- ФОРМЫ ВХОДА И РЕГИСТРАЦИИ -->
 <!-- Favicon  -->
@@ -594,7 +552,6 @@ echo $type_names[$trans['type']] ?? '<span class="badge bg-secondary">' . $trans
 </div>
 </div>
 <?php endif; ?>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // Глобальная функция для переключения вкладок
 function showTab(tabName) {
@@ -659,7 +616,7 @@ showTab(tabName);
 });
 
 // Автоматический фокус на первой форме
-<?php if (isset($_POST['register']) || isset($register_error)): ?>
+<?php if (isset($_POST['register']) || isset($register_error) || $show_register_tab): ?>
 showTab('register');
 <?php else: ?>
 document.querySelector('input[name="username"]')?.focus();
@@ -720,7 +677,5 @@ confirm.focus();
 }
 });
 </script>
-</body>
-</html>
 
-
+<?php require_once '../templates/footer.php'; ?>
