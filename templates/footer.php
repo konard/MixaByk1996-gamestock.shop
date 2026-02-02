@@ -1,5 +1,5 @@
 <?php
-// templates/footer.php - Общий подвал для всего сайта
+// templates/footer.php - Общий подвал для всего сайта (идентичный главной странице)
 ?>
     </div><!-- /.container mt-4 from header -->
 
@@ -10,12 +10,13 @@
 <b><li class="mb-2"><a href="/privacy.php">  Правила  </a><a href="/privacy.php">  Соглашение  </a><a href="/privacy.php">  Конфиденциальность</a></li></b>
 </ul>
 <p class="pb-2 p-small statement"><b>gamestock.shop &copy; 2019-<?= date('Y') ?></b></p>
+<p class="pb-2 p-small statement"><b>gamestock.shop &copy; 2019-<?= date('Y') ?></b></p>
 </div></div>
 <style>
 .copyright {
     padding-top: 1.5rem;
     padding-bottom: 1rem;
-    background-color: dodgerblue;
+    background-color: rgb(2, 55, 241);
     text-align: center;
 }
 .copyright a {
@@ -34,6 +35,17 @@
 }
 .copyright .list-unstyled a {
     color: white;
+}
+.copyright p {
+    color: white;
+}
+@media (min-width: 1024px) {
+    .copyright {
+        text-align: left;
+    }
+    .copyright .statement {
+        text-align: right;
+    }
 }
 </style>
 

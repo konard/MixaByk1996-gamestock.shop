@@ -649,7 +649,7 @@ document.getElementById('quickOrderForm').addEventListener('submit', function(e)
 <div class="copyright">
 <div class="container px-4 sm:px-8 lg:grid lg:grid-cols-3">
 <ul class="mb-4 list-unstyled p-small">
-<b><li class="mb-2"><a href="article.html">  Правила  </a><a href="terms.html">  Соглашение  </a><a href="privacy.html">  Конфиденциальность</a></li></b>
+<b><li class="mb-2"><a href="/privacy.php">  Правила  </a><a href="/privacy.php">  Соглашение  </a><a href="/privacy.php">  Конфиденциальность</a></li></b>
 </ul>
 <p class="pb-2 p-small statement"><b>gamestock.shop © 2019-2026</b></p>
 <p class="pb-2 p-small statement"><b>gamestock.shop © 2019-2026</b><a href="#your-link" class="no-underline"></a></p>
