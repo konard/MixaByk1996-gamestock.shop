@@ -163,24 +163,28 @@ try {
                         // Определяем статус товара
                         $stock = $item['count'] ?? 0;
                         $is_available = $stock > 0;
-                        
+                        // Описание товара от поставщика
+                        $item_description = $item['description'] ?? '';
+
                         if ($existing) {
                             // Обновляем существующий товар
-                            $sql = "UPDATE supplier_products SET 
-                                name = ?, 
-                                category = ?, 
-                                price = ?, 
-                                our_price = ?, 
-                                original_price = ?, 
-                                currency_code = ?, 
-                                converted_price = ?, 
-                                stock = ?, 
+                            $sql = "UPDATE supplier_products SET
+                                name = ?,
+                                description = ?,
+                                category = ?,
+                                price = ?,
+                                our_price = ?,
+                                original_price = ?,
+                                currency_code = ?,
+                                converted_price = ?,
+                                stock = ?,
                                 last_updated = NOW()
                                 WHERE id = ?";
-                            
+
                             $stmt = $pdo->prepare($sql);
                             $stmt->execute([
                                 $item['title'],
+                                $item_description,
                                 $item['category_id'],
                                 $converted_price,           // price (для показа)
                                 $calculated['final_price'], // our_price (с наценкой)
@@ -190,20 +194,21 @@ try {
                                 $stock,
                                 $existing['id']
                             ]);
-                            
+
                             $updated++;
                         } else {
                             // Добавляем новый товар
-                            $sql = "INSERT INTO supplier_products 
-                                (supplier_id, external_id, name, category, price, our_price, 
-                                 original_price, currency_code, converted_price, stock, last_updated) 
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
-                            
+                            $sql = "INSERT INTO supplier_products
+                                (supplier_id, external_id, name, description, category, price, our_price,
+                                 original_price, currency_code, converted_price, stock, last_updated)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+
                             $stmt = $pdo->prepare($sql);
                             $stmt->execute([
                                 $supplier_id,
                                 $item['id'],
                                 $item['title'],
+                                $item_description,
                                 $item['category_id'],
                                 $converted_price,           // price (для показа)
                                 $calculated['final_price'], // our_price (с наценкой)
@@ -212,7 +217,7 @@ try {
                                 $converted_price,           // converted_price
                                 $stock
                             ]);
-                            
+
                             $added++;
                         }
                         

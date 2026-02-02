@@ -155,7 +155,7 @@ $total_pages = ceil($total / $per_page);
 
 // Получаем товары
 $sql = "
-SELECT sp.*, s.name as supplier_name, s.id as supplier_id
+SELECT sp.*, sp.description as product_description, s.name as supplier_name, s.id as supplier_id
 FROM supplier_products sp
 LEFT JOIN suppliers s ON sp.supplier_id = s.id
 $where_sql
@@ -431,10 +431,16 @@ $category_name = $category_names[$product_category] ?? 'Категория ' . $
 </div>
 <h5 class="card-title"><?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?></h5>
 <p class="text-muted mb-3 flex-grow-1" style="font-size: 0.9rem;">
-<?= htmlspecialchars(substr($product['name'], 0, 100), ENT_QUOTES, 'UTF-8') ?>...
+<?php
+$desc = $product['product_description'] ?? '';
+if (!empty($desc)) {
+    echo htmlspecialchars(mb_substr($desc, 0, 150, 'UTF-8'), ENT_QUOTES, 'UTF-8');
+    if (mb_strlen($desc, 'UTF-8') > 150) echo '...';
+} else {
+    echo htmlspecialchars(mb_substr($product['name'], 0, 100, 'UTF-8'), ENT_QUOTES, 'UTF-8') . '...';
+}
+?>
 </p>
-<!-- ИСПРАВЛЕНО: Убрано упоминание buy-accs.net -->
-<!-- Удален блок с информацией о поставщике -->
 <div class="mt-auto">
 <div class="d-flex justify-content-between align-items-center mb-2">
 <div>
@@ -484,34 +490,9 @@ class="btn btn-primary btn-lg">
 </nav>
 <?php endif; ?>
 <?php endif; ?>
-</div></div></div>
-<!-- Chatra {literal} -->
-<script>
-(function(d, w, c) {
-w.ChatraID = 'GXdF3eAtsspXao2vf';
-var s = d.createElement('script');
-w[c] = w[c] || function() {
-(w[c].q = w[c].q || []).push(arguments);
-};
-s.async = true;
-s.src = 'https://call.chatra.io/chatra.js';
-if (d.head) d.head.appendChild(s);
-})(document, window, 'Chatra');
-</script>
-<!-- /Chatra {/literal} -->
+</div><!-- /.container (catalog content) -->
+
 <style>
-.copyright {
-padding-top: 1.5rem;
-background-color: dodgerblue;
-text-align: center;
-}
-.copyright .list-unstyled li {
-display: inline-block;
-margin-right: 1rem;
-}
-.copyright .statement {
-text-align: right;
-}
 .product-card {
 transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 border: 1px solid #e9ecef;
@@ -642,3 +623,5 @@ updateTotalPrice(productSelect);
 }
 });
 </script>
+
+<?php require_once 'templates/footer.php'; ?>

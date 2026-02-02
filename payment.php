@@ -484,7 +484,7 @@ $fast_order = $_GET['fast_order'] ?? 0; // Флаг быстрого заказ�
 
 // Получаем данные заказа
 try {
-    $stmt = $pdo->prepare("SELECT * FROM orders WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT o.*, sp.description as product_description FROM orders o LEFT JOIN supplier_products sp ON o.product_id = sp.id WHERE o.id = ?");
     $stmt->execute([$order_id]);
     $order = $stmt->fetch();
     
@@ -525,10 +525,48 @@ try {
     die("Ошибка получения данных заказа: " . $e->getMessage());
 }
 
-// Обработка оплаты картой
+// Обработка оплаты
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-    
+
+    // Оплата через Lava.ru
+    if ($action === 'pay_with_lava') {
+        require_once 'includes/LavaPayment.php';
+        $lava = new LavaPayment();
+
+        if (!$lava->isConfigured()) {
+            // If Lava is not configured, show error
+            header('Location: payment_failed.php?order_id=' . $order_id . '&error=' . urlencode('Платежная система Lava временно недоступна. Обратитесь к администратору.'));
+            exit;
+        }
+
+        $site_url = rtrim(SITE_URL, '/');
+        $result = $lava->createInvoice(
+            $amount,
+            $order['order_number'],
+            'Оплата заказа #' . $order['order_number'] . ' - ' . ($order['product_name'] ?? ''),
+            $site_url . '/payment_success.php?order_id=' . $order_id,
+            $site_url . '/payment_failed.php?order_id=' . $order_id,
+            $site_url . '/lava_webhook.php',
+            300 // 5 hours
+        );
+
+        if (!$result['error'] && !empty($result['url'])) {
+            // Save invoice ID to order
+            $stmt = $pdo->prepare("UPDATE orders SET payment_id = ?, payment_method = 'lava', notes = CONCAT(COALESCE(notes, ''), ' | Lava invoice created') WHERE id = ?");
+            $stmt->execute([$result['invoice_id'], $order_id]);
+
+            // Redirect to Lava payment page
+            header('Location: ' . $result['url']);
+            exit;
+        } else {
+            $error_msg = $result['message'] ?? 'Ошибка создания счета';
+            error_log("Lava invoice creation failed for order #$order_id: " . json_encode($result));
+            header('Location: payment_failed.php?order_id=' . $order_id . '&error=' . urlencode($error_msg));
+            exit;
+        }
+    }
+
     if ($action === 'pay_with_card') {
         $payment_method = $_POST['payment_method'] ?? 'card';
         $card_number = $_POST['card_number'] ?? '';
@@ -758,21 +796,6 @@ require_once 'templates/header.php';
 ?>
 
 
-<!-- Chatra {literal} -->
-<script>
-(function(d, w, c) {
-w.ChatraID = 'GXdF3eAtsspXao2vf';
-var s = d.createElement('script');
-w[c] = w[c] || function() {
-(w[c].q = w[c].q || []).push(arguments);
-};
-s.async = true;
-s.src = 'https://call.chatra.io/chatra.js';
-if (d.head) d.head.appendChild(s);
-})(document, window, 'Chatra');
-</script>
-<!-- /Chatra {/literal} -->
-
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -786,6 +809,9 @@ if (d.head) d.head.appendChild(s);
                         <h5>Детали заказа:</h5>
                         <p><strong>Номер заказа:</strong> <?= htmlspecialchars($order['order_number']) ?></p>
                         <p><strong>Товар:</strong> <?= htmlspecialchars($order['product_name']) ?></p>
+                        <?php if (!empty($order['product_description'])): ?>
+                        <p><strong>Описание:</strong> <small><?= htmlspecialchars(mb_substr($order['product_description'], 0, 200, 'UTF-8')) ?><?= mb_strlen($order['product_description'] ?? '', 'UTF-8') > 200 ? '...' : '' ?></small></p>
+                        <?php endif; ?>
                         <p><strong>Сумма к оплате:</strong> 
                            <span class="text-success fw-bold"><?= number_format($amount, 2) ?> ₽</span>
                         </p>
@@ -854,10 +880,48 @@ if (d.head) d.head.appendChild(s);
                         </div>
                     <?php endif; ?>
                     
-                    <!-- Форма оплаты картой -->
+                    <!-- Оплата через Lava.ru -->
+                    <?php
+                    require_once 'includes/LavaPayment.php';
+                    $lava_payment = new LavaPayment();
+                    ?>
+                    <div class="card mb-4 border-info">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">🔵 Оплата через Lava</h5>
+                        </div>
+                        <div class="card-body">
+                            <?php if ($lava_payment->isConfigured()): ?>
+                            <p>Оплатите заказ через платежную систему Lava — банковская карта, СБП, QIWI и другие способы.</p>
+                            <form method="POST">
+                                <input type="hidden" name="action" value="pay_with_lava">
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-info btn-lg text-white">
+                                        <i class="fas fa-external-link-alt me-2"></i>Оплатить через Lava <?= number_format($amount, 2) ?> ₽
+                                    </button>
+                                </div>
+                            </form>
+                            <small class="text-muted d-block mt-2 text-center">
+                                <i class="fas fa-shield-alt me-1"></i>Безопасная оплата через lava.ru
+                            </small>
+                            <?php else: ?>
+                            <div class="alert alert-warning mb-0">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                Оплата через Lava временно недоступна. Настройте параметры LAVA_SHOP_ID и LAVA_SECRET_KEY в конфигурации сайта.
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-4">
+                        <hr class="my-3">
+                        <h6 class="text-muted">ИЛИ</h6>
+                        <hr class="my-3">
+                    </div>
+
+                    <!-- Форма оплаты картой (тестовая) -->
                     <div class="card">
                         <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">💳 Оплата картой</h5>
+                            <h5 class="mb-0">💳 Оплата картой (тестовая)</h5>
                         </div>
                         <div class="card-body">
                             <form method="POST" id="paymentForm">

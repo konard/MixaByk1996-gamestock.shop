@@ -1,7 +1,7 @@
 <?php
 // cabinet/index.php - Личный кабинет с регистрацией и входом
 session_start();
-require_once '../includes/config.php';
+require_once __DIR__ . '/../includes/config.php';
 
 // Обработка выхода
 if (isset($_GET['logout'])) {
@@ -116,11 +116,13 @@ header('Location: /cabinet/');
 exit();
 }
 
-// Получаем заказы
+// Получаем заказы с описанием товара
 $orders_stmt = $pdo->prepare("
-SELECT * FROM orders
-WHERE user_id = ?
-ORDER BY created_at DESC
+SELECT o.*, sp.description as product_description
+FROM orders o
+LEFT JOIN supplier_products sp ON o.product_id = sp.id
+WHERE o.user_id = ?
+ORDER BY o.created_at DESC
 LIMIT 10
 ");
 $orders_stmt->execute([$_SESSION['user_id']]);
@@ -158,41 +160,24 @@ $balance = 0;
 $last_paid_with_account = null;
 }
 }
-?>
-<!DOCTYPE html>
-<!-- Favicon  -->
-<link rel="icon" href="https://gamestock.shop/images/favicon.ico" />
-<html lang="ru">
-<!-- Chatra {literal} -->
-<script>
-(function(d, w, c) {
-w.ChatraID = 'GXdF3eAtsspXao2vf';
-var s = d.createElement('script');
-w[c] = w[c] || function() {
-(w[c].q = w[c].q || []).push(arguments);
-};
-s.async = true;
-s.src = 'https://call.chatra.io/chatra.js';
-if (d.head) d.head.appendChild(s);
-})(document, window, 'Chatra');
-</script>
-<!-- /Chatra {/literal} -->
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= isset($_SESSION['user_id']) ? 'Личный кабинет' : 'Вход и регистрация' ?> - <?= SITE_NAME ?></title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-<style>
-body {
-background: lightskyblue;
-background: url(https://gamestock.shop/images/background.png), linear-gradient(140deg, royalblue 0%, cornflowerblue 33%, dodgerblue 67%, lightskyblue 100%);
-min-height: 100vh;
-padding: 20px;
+
+// Detect if registration tab should be active (from /cabinet/reg/ URL)
+$show_register_tab = false;
+if (isset($_GET['tab']) && $_GET['tab'] === 'register') {
+    $show_register_tab = true;
 }
+if (strpos($_SERVER['REQUEST_URI'], '/cabinet/reg') !== false) {
+    $show_register_tab = true;
+}
+
+$page_title = isset($_SESSION['user_id']) ? 'Личный кабинет' : 'Вход и регистрация';
+$page_title .= ' - ' . SITE_NAME;
+require_once __DIR__ . '/../templates/header.php';
+?>
+<style>
 .auth-container {
 max-width: 500px;
-margin: 50px auto;
+margin: 30px auto;
 background: white;
 border-radius: 20px;
 overflow: hidden;
@@ -226,13 +211,6 @@ display: none;
 .auth-form.active {
 display: block;
 }
-.test-accounts {
-background: #f8f9fa;
-border-radius: 10px;
-padding: 15px;
-margin-top: 20px;
-font-size: 0.9rem;
-}
 .cabinet-container {
 max-width: 1200px;
 margin: 0 auto;
@@ -265,25 +243,7 @@ transform: translateY(-50%);
 cursor: pointer;
 color: #6c757d;
 }
-
-.copyright {
-padding-top: 1.5rem;
-background-color: rgb(2, 55, 241);
-text-align: center;
-}
-.copyright {
-text-align: left;
-}
-.copyright .list-unstyled li {
-display: inline-block;
-margin-right: 1rem;
-}
-.copyright .statement {
-text-align: right;
-}
 </style>
-</head>
-<body>
 <?php if (!isset($_SESSION['user_id'])): ?>
 <!-- ФОРМЫ ВХОДА И РЕГИСТРАЦИИ -->
 <!-- Favicon  -->
@@ -449,7 +409,12 @@ ID: #<?= $user['id'] ?> |
 <?php foreach ($orders as $order): ?>
 <tr>
 <td><?= $order['order_number'] ?></td>
-<td><?= htmlspecialchars(substr($order['product_name'] ?? 'Без названия', 0, 30)) ?></td>
+<td>
+<?= htmlspecialchars(substr($order['product_name'] ?? 'Без названия', 0, 30)) ?>
+<?php if (!empty($order['product_description'])): ?>
+<br><small class="text-muted"><?= htmlspecialchars(mb_substr($order['product_description'], 0, 80, 'UTF-8')) ?><?= mb_strlen($order['product_description'] ?? '', 'UTF-8') > 80 ? '...' : '' ?></small>
+<?php endif; ?>
+</td>
 <td><?= date('d.m.Y H:i', strtotime($order['created_at'])) ?></td>
 <td><?= number_format($order['total_amount'], 2) ?> ₽</td>
 <td>
@@ -468,7 +433,9 @@ echo $status_badges[$order['payment_status']] ?? $status_badges[$order['status']
 </td>
 <td>
 <?php if (!empty($order['login_data']) && !empty($order['password_data']) && $order['payment_status'] === 'paid'): ?>
-<span class="badge bg-success" title="Данные доступны">✓ Есть</span>
+<button class="btn btn-sm btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#credentials-<?= $order['id'] ?>">
+<i class="fas fa-key me-1"></i>Показать
+</button>
 <?php elseif ($order['payment_status'] === 'paid'): ?>
 <span class="badge bg-warning" title="Данные генерируются">⏳</span>
 <?php else: ?>
@@ -476,6 +443,35 @@ echo $status_badges[$order['payment_status']] ?? $status_badges[$order['status']
 <?php endif; ?>
 </td>
 </tr>
+<?php if (!empty($order['login_data']) && !empty($order['password_data']) && $order['payment_status'] === 'paid'): ?>
+<tr class="collapse" id="credentials-<?= $order['id'] ?>">
+<td colspan="6">
+<div class="p-3 bg-light rounded border">
+<div class="row">
+<div class="col-md-6 mb-2">
+<label class="form-label small text-muted fw-bold">Логин:</label>
+<div class="input-group">
+<input type="text" class="form-control form-control-sm" value="<?= htmlspecialchars($order['login_data']) ?>" readonly id="login-<?= $order['id'] ?>">
+<button class="btn btn-outline-secondary btn-sm" onclick="copyToClipboard('login-<?= $order['id'] ?>')"><i class="fas fa-copy"></i></button>
+</div>
+</div>
+<div class="col-md-6 mb-2">
+<label class="form-label small text-muted fw-bold">Пароль:</label>
+<div class="input-group">
+<input type="text" class="form-control form-control-sm" value="<?= htmlspecialchars($order['password_data']) ?>" readonly id="pass-<?= $order['id'] ?>">
+<button class="btn btn-outline-secondary btn-sm" onclick="copyToClipboard('pass-<?= $order['id'] ?>')"><i class="fas fa-copy"></i></button>
+</div>
+</div>
+</div>
+<?php if (!empty($order['product_description'])): ?>
+<div class="mt-2">
+<small class="text-muted"><i class="fas fa-info-circle me-1"></i><?= htmlspecialchars(mb_substr($order['product_description'], 0, 200, 'UTF-8')) ?></small>
+</div>
+<?php endif; ?>
+</div>
+</td>
+</tr>
+<?php endif; ?>
 <?php endforeach; ?>
 </tbody>
 </table>
@@ -581,13 +577,10 @@ echo $type_names[$trans['type']] ?? '<span class="badge bg-secondary">' . $trans
 </ul>
 </div>
 </div>
-<!-- Футер -->
-<div class="text-center p-3 border-top">
-<p class="mb-0">© <?= date('Y') ?> <?= SITE_NAME ?>. Личный кабинет v1.0</p>
-</div>
-</div>
+</div><!-- /.row -->
+</div><!-- /.container mt-4 -->
+</div><!-- /.cabinet-container -->
 <?php endif; ?>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // Глобальная функция для переключения вкладок
 function showTab(tabName) {
@@ -652,7 +645,7 @@ showTab(tabName);
 });
 
 // Автоматический фокус на первой форме
-<?php if (isset($_POST['register']) || isset($register_error)): ?>
+<?php if (isset($_POST['register']) || isset($register_error) || $show_register_tab): ?>
 showTab('register');
 <?php else: ?>
 document.querySelector('input[name="username"]')?.focus();
@@ -713,7 +706,5 @@ confirm.focus();
 }
 });
 </script>
-</body>
-</html>
 
-
+<?php require_once __DIR__ . '/../templates/footer.php'; ?>

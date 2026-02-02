@@ -35,6 +35,12 @@ define('BUYACCS_DEFAULT_CURRENCY', 'rub');
 // define('YOOMARKET_API_TOKEN', 'ваш_токен');
 // define('KINGUIN_API_KEY', 'ваш_ключ');
 
+// Lava.ru Payment System (https://lava.ru/)
+// Get credentials from https://lava.ru/ business dashboard
+define('LAVA_SHOP_ID', ''); // UUID проекта из кабинета Lava
+define('LAVA_SECRET_KEY', ''); // Секретный ключ для подписи запросов
+define('LAVA_WEBHOOK_KEY', ''); // Дополнительный ключ для проверки подписи в хуках
+
 // Общие настройки API
 define('API_TIMEOUT', 30);
 define('API_USER_AGENT', 'GameStock-Shop/1.0');
