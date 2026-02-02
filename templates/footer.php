@@ -2,8 +2,9 @@
 // templates/footer.php - Общий подвал для всего сайта (идентичный главной странице)
 ?>
     </div><!-- /.container mt-4 from header -->
+</div><!-- /.page-content-wrapper from header -->
 
-<!-- Copyright -->
+<!-- Copyright (идентичен главной странице) -->
 <div class="copyright">
 <div class="container px-4 sm:px-8 lg:grid lg:grid-cols-3">
 <ul class="mb-4 list-unstyled p-small">
@@ -52,21 +53,13 @@
 }
 </style>
 
-<!-- Chatra {literal} -->
-<script>
-(function(d, w, c) {
-    w.ChatraID = 'GXdF3eAtsspXao2vf';
-    var s = d.createElement('script');
-    w[c] = w[c] || function() {
-        (w[c].q = w[c].q || []).push(arguments);
-    };
-    s.async = true;
-    s.src = 'https://call.chatra.io/chatra.js';
-    if (d.head) d.head.appendChild(s);
-})(document, window, 'Chatra');
-</script>
-<!-- /Chatra {/literal} -->
-
+<!-- Scripts (как на главной странице) -->
+<script src="https://gamestock.shop/scripts/jquery.min.js"></script>
+<script src="https://gamestock.shop/scripts/jquery.easing.min.js"></script>
+<script src="https://gamestock.shop/scripts/swiper.min.js"></script>
+<script src="https://gamestock.shop/scripts/jquery.magnific-popup.js"></script>
+<script src="https://gamestock.shop/scripts/scripts.js"></script>
+<!-- Bootstrap JS (для контента страниц) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
