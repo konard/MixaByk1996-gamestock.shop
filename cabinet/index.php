@@ -433,7 +433,9 @@ echo $status_badges[$order['payment_status']] ?? $status_badges[$order['status']
 </td>
 <td>
 <?php if (!empty($order['login_data']) && !empty($order['password_data']) && $order['payment_status'] === 'paid'): ?>
-<span class="badge bg-success" title="Данные доступны">✓ Есть</span>
+<button class="btn btn-sm btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#credentials-<?= $order['id'] ?>">
+<i class="fas fa-key me-1"></i>Показать
+</button>
 <?php elseif ($order['payment_status'] === 'paid'): ?>
 <span class="badge bg-warning" title="Данные генерируются">⏳</span>
 <?php else: ?>
@@ -441,6 +443,35 @@ echo $status_badges[$order['payment_status']] ?? $status_badges[$order['status']
 <?php endif; ?>
 </td>
 </tr>
+<?php if (!empty($order['login_data']) && !empty($order['password_data']) && $order['payment_status'] === 'paid'): ?>
+<tr class="collapse" id="credentials-<?= $order['id'] ?>">
+<td colspan="6">
+<div class="p-3 bg-light rounded border">
+<div class="row">
+<div class="col-md-6 mb-2">
+<label class="form-label small text-muted fw-bold">Логин:</label>
+<div class="input-group">
+<input type="text" class="form-control form-control-sm" value="<?= htmlspecialchars($order['login_data']) ?>" readonly id="login-<?= $order['id'] ?>">
+<button class="btn btn-outline-secondary btn-sm" onclick="copyToClipboard('login-<?= $order['id'] ?>')"><i class="fas fa-copy"></i></button>
+</div>
+</div>
+<div class="col-md-6 mb-2">
+<label class="form-label small text-muted fw-bold">Пароль:</label>
+<div class="input-group">
+<input type="text" class="form-control form-control-sm" value="<?= htmlspecialchars($order['password_data']) ?>" readonly id="pass-<?= $order['id'] ?>">
+<button class="btn btn-outline-secondary btn-sm" onclick="copyToClipboard('pass-<?= $order['id'] ?>')"><i class="fas fa-copy"></i></button>
+</div>
+</div>
+</div>
+<?php if (!empty($order['product_description'])): ?>
+<div class="mt-2">
+<small class="text-muted"><i class="fas fa-info-circle me-1"></i><?= htmlspecialchars(mb_substr($order['product_description'], 0, 200, 'UTF-8')) ?></small>
+</div>
+<?php endif; ?>
+</div>
+</td>
+</tr>
+<?php endif; ?>
 <?php endforeach; ?>
 </tbody>
 </table>
