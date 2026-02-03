@@ -250,7 +250,7 @@ color: #6c757d;
 <link rel="icon" href="https://gamestock.shop/images/favicon.ico" />
 <div class="auth-container">
 <div class="auth-tabs">
-<div class="auth-tab active" data-tab ="login">Вход</div>
+<div class="auth-tab active" data-tab="login">Вход</div>
 <div class="auth-tab" data-tab="register">Регистрация</div>
 </div>
 <div class="auth-content">
@@ -289,7 +289,7 @@ id="loginPassword" autocomplete="current-password">
 </form>
 </div>
 <!-- ФОРМА РЕГИСТРАЦИИ -->
-<div  class="auth-form" id="register-form">
+<div class="auth-form" id="register-form">
 <h2 class="mb-4"><i class="fas fa-user-plus me-2"></i>Регистрация</h2>
 <?php if (isset($register_error)): ?>
 <div class="alert alert-danger"><?= $register_error ?></div>
