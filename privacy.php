@@ -1,85 +1,67 @@
-<noindex>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<!-- SEO Meta Tags -->
-<meta name="description" content="Pavo is a mobile app Tailwind CSS HTML template created to help you present benefits, features and information about mobile apps in order to convince visitors to download them" />
-<meta name="author" content="Your name" />
-<!-- OG Meta Tags to improve the way the post looks when you share the page on Facebook, Twitter, LinkedIn -->
-<meta property="og:site_name" content="" /> <!-- website name -->
-<meta property="og:site" content="" /> <!-- website link -->
-<meta property="og:title" content="" /> <!-- title shown in the actual shared post -->
-<meta property="og:description" content="" /> <!-- description shown in the actual shared post -->
-<meta property="og:image" content="" /> <!-- image link, make sure it's jpg -->
-<meta property="og:url" content="" /> <!-- where do you want your post to link to -->
-<meta name="twitter:card" content="summary_large_image" /> <!-- to have large image post format in Twitter -->
-<!-- Webpage Title -->
-<title>Политика конфиденциальности</title>
-<!-- Styles -->
-<link rel="preconnect" href="https://fonts.gstatic.com" />
-<link href="https://gamestock.shop/styles/fonts.css" rel="stylesheet" />
-<link href="https://gamestock.shop/styles/awesome.css" rel="stylesheet" />
-<link href="https://gamestock.shop/styles/tailwind.css" rel="stylesheet" />
-<link href="https://gamestock.shop/styles/magnific-popup.css" rel="stylesheet" />
-<link href="https://gamestock.shop/styles/styles.css" rel="stylesheet" />
-<!-- Favicon  -->
-<link rel="icon" href="https://gamestock.shop/images/favicon.ico" />
-</head>
-<body data-spy="scroll" data-target=".fixed-top">
-<!-- Navigation -->
-<nav class="navbar fixed-top">
-<div class="container mx-auto flex flex-wrap items-center justify-between sm:px-4 lg:flex-nowrap lg:px-8 xl:max-w-6xl">
-<!-- Text Logo - Use this if you don't have a graphic logo -->
-<!-- <a class="text-gray-800 font-semibold text-3xl leading-4 no-underline page-scroll" href="index.html">Pavo</a> -->
-<!-- Image Logo -->
-<a class="inline-block mr-4 py-0.5 text-xl whitespace-nowrap hover:no-underline focus:no-underline" href="index.html">
-<img src="images/logo.svg" alt="alternative" class="h-8"/>
-</a>
-<button class="background-transparent rounded text-xl leading-none hover:no-underline focus:no-underline lg:hidden lg:text-gray-400" type="button" data-toggle="offcanvas">
-<span class="navbar-toggler-icon inline-block w-8 h-8 align-middle"></span>
-</button>
-<div class="navbar-collapse offcanvas-collapse lg:flex lg:flex-grow lg:items-center" id="navbarsExampleDefault">
-<ul class="pl-0 mt-3 mb-2 ml-auto flex flex-col list-none lg:mt-0 lg:mb-0 lg:flex-row">
-<li>
-<a class="nav-link page-scroll" href="index.html#header">Home <span class="sr-only">(current)</span></a>
-</li>
-<li>
-<a class="nav-link page-scroll" href="index.html#features">Features</a>
-</li>
-<li>
-<a class="nav-link page-scroll" href="index.html#details">Details</a>
-</li>
-<li>
-<a class="nav-link page-scroll" href="index.html#pricing">Pricing</a>
-</li>
-<li class="dropdown">
-<a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Drop</a>
-<div class="dropdown-menu" aria-labelledby="dropdown01">
-<a class="dropdown-item page-scroll" href="article.html">Article Details</a>
-<div class="dropdown-divider"></div>
-<a class="dropdown-item page-scroll" href="terms.html">Terms Conditions</a>
-<div class="dropdown-divider"></div>
-<a class="dropdown-item page-scroll" href="privacy.html">Privacy Policy</a>
-</div>
-</li>
-<li>
-<a class="nav-link page-scroll" href="index.html#download">Download</a>
-</li>
-</ul>
-<span class="block lg:ml-3.5">
-<a class="no-underline" href="#your-link">
-<i class="fab fa-apple text-indigo-600 hover:text-pink-500 text-xl transition-all duration-200 mr-1.5"></i>
-</a>
-<a class="no-underline" href="#your-link">
-<i class="fab fa-android text-indigo-600 hover:text-pink-500 text-xl transition-all duration-200"></i>
-</a>
-</span>
-</div> <!-- end of navbar-collapse -->
-</div> <!-- end of container -->
-</nav> <!-- end of navbar -->
-<!-- end of navigation -->
+<?php
+// privacy.php - Политика конфиденциальности
+session_start();
+require_once 'includes/config.php';
+
+$page_title = 'Политика конфиденциальности - ' . SITE_NAME;
+require_once 'templates/header.php';
+?>
+
+<style>
+/* Privacy page specific styles */
+.ex-header {
+    padding-top: 8.5rem;
+    padding-bottom: 4rem;
+    background-color: #f1f9fc;
+}
+.ex-basic-1 .list-unstyled .fas {
+    font-size: 0.375rem;
+    line-height: 1.625rem;
+}
+.ex-basic-1 .text-box {
+    padding: 1.25rem 1.25rem 0.5rem 1.25rem;
+    background-color: #f1f9fc;
+}
+.privacy-content h1 {
+    color: royalblue;
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 2.625rem;
+    letter-spacing: -0.4px;
+}
+.privacy-content h2 {
+    color: #252c38;
+    font-weight: 700;
+    font-size: 1.75rem;
+    line-height: 2.25rem;
+    letter-spacing: -0.3px;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+.privacy-content h3 {
+    color: #252c38;
+    font-weight: 700;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    letter-spacing: -0.2px;
+    margin-bottom: 0.5rem;
+}
+.privacy-content p {
+    color: #6b747b;
+    margin-bottom: 1rem;
+    line-height: 1.625rem;
+}
+.privacy-content ul {
+    margin-bottom: 1.5rem;
+}
+.privacy-content .text-box {
+    background-color: #f1f9fc;
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+</style>
+
 <!-- Header -->
 <header class="ex-header bg-gray">
 <div class="container mx-auto px-4 sm:px-8 xl:max-w-6xl xl:px-4">
@@ -87,8 +69,9 @@
 </div> <!-- end of container -->
 </header> <!-- end of ex-header -->
 <!-- end of header -->
+
 <!-- Basic -->
-<div class="ex-basic-1 py-12">
+<div class="ex-basic-1 py-12 privacy-content">
 <div class="container mx-auto px-4 sm:px-8 xl:max-w-5xl xl:px-12">
 <h2 class="mt-12 mb-4">1. Private data we receive and collect</h2>
 <p class="mb-12"> Leon also automatically collects and receives certain information from your computer or mobile device, including the activities you perform on our Website, the Platforms, and the Applications, the type of hardware and software you are using (for example, your operating system or browser), and information obtained</p>
@@ -193,33 +176,11 @@
 </div>
 <!-- end of text-box -->
 <p class="mb-12">Help you showcase your mobile app online and persuade visitors to download it from the app stores. The author used Tailwind CSS to build the template and integrated a nice animated navigation that slides from outside the screen. Features include an eye catching morphtext in the header, details lightbox and other features.</p>
-<a class="btn-solid-reg mb-12" href="index.html#download">Download</a>
+<a class="btn-solid-reg mb-12" href="/">На главную</a>
 </div>
 <!-- end of container -->
 </div>
 <!-- end of ex-basic-1 -->
 <!-- end of basic -->
-<!-- Footer -->
 
-<!-- Copyright -->
-<div class="copyright">
-<div class="container px-4 sm:px-8 lg:grid lg:grid-cols-3">
-<ul class="mb-4 list-unstyled p-small">
-<li class="mb-2"><a href="article.html">Article Details</a></li>
-<li class="mb-2"><a href="terms.html">Terms & Conditions</a></li>
-<li class="mb-2"><a href="privacy.html">Privacy Policy</a></li>
-</ul>
-<p class="pb-2 p-small statement">Copyright © <a href="#your-link" class="no-underline">Your name</a></p>
-<p class="pb-2 p-small statement">Distributed by :<a href="https://themewagon.com/" class="no-underline">Themewagon</a></p>
-</div>
-</div> <!-- end of copyright -->
-<!-- end of copyright -->
-<!-- Scripts -->
-<script src="https://gamestock.shop/scripts/jquery.min.js"></script> <!-- jQuery for JavaScript plugins -->
-<script src="https://gamestock.shop/scripts/jquery.easing.min.js"></script> <!-- jQuery Easing for smooth scrolling between anchors -->
-<script src="https://gamestock.shop/scripts/swiper.min.js"></script> <!-- Swiper for image and text sliders -->
-<script src="https://gamestock.shop/scripts/jquery.magnific-popup.js"></script> <!-- Magnific Popup for lightboxes -->
-<script src="https://gamestock.shop//scripts/scripts.js"></script> <!-- Custom scripts -->
-</body>
-</html>
-</noindex>
+<?php require_once 'templates/footer.php'; ?>
